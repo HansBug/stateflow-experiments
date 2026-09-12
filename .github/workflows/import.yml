@@ -35,7 +35,7 @@ jobs:
           persist-credentials: false
       - uses: matlab-actions/setup-matlab@v3
         with:
-          release: R2022b
+          release: R2025b
           products: Simulink Stateflow
           cache: true
       - uses: matlab-actions/run-command@v3
