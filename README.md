@@ -1,167 +1,43 @@
-# Stateflow experiments
+# Stateflow 实验
 
-Public GitHub Actions experiments for using native MathWorks Stateflow as a
-source-model frontend and independent execution oracle. No user MATLAB license
-or repository license secret was supplied to these experiments.
+这是一个公开的 GitHub Actions 实验仓库：使用 MathWorks Stateflow 原生接口作为源模型前端和独立执行参照。本实验没有使用用户个人 MATLAB licence，也没有仓库 licence secret。
 
-[公开模型与文件格式调查](docs/public-models.zh.md) ·
-[单向导入边界](docs/import-architecture.zh.md) ·
-[现成工具比较](docs/reused-frontends.zh.md) ·
-[失败归因复核](docs/frontend-audit.zh.md) ·
-[Separate SysML v2 experiments](https://github.com/HansBug/sysmlv2-experiment) ·
-[Public workflow runs](https://github.com/HansBug/stateflow-experiments/actions)
+[公开模型与文件格式调查](docs/public-models.zh.md) · [单向导入边界](docs/import-architecture.zh.md) · [现成工具比较](docs/reused-frontends.zh.md) · [失败归因复核](docs/frontend-audit.zh.md) · [Stateflow 特性说明](docs/features.zh.md) · [独立的 SysML v2 实验](https://github.com/HansBug/sysmlv2-experiment) · [公开 workflow](https://github.com/HansBug/stateflow-experiments/actions)
 
-This repository implements a restricted one-way Stateflow-to-FCSTM importer.
-MathWorks APIs extract the graph, the pinned MARS grammar builds source ASTs,
-and pyfcstm 0.6.0 builds the target AST/model and runs semantic inspection.
-Unsupported constructs are recorded, without a language-wide equivalence claim.
+本仓库实现受限的 Stateflow→FCSTM 单向导入：MathWorks API 抽取图结构，固定版本 MARS grammar 构建源 AST，pyfcstm 0.6.0 构建目标 AST/model 并执行语义检查。无法支持的特性会明确登记，不宣称覆盖整个 Stateflow 语言。
 
-## Observed capabilities
+## 已验证能力
 
-Environment: MATLAB **R2022b**, Ubuntu 22.04, official MATLAB Actions v3.
-The native lifecycle evidence revision is `add4a279d6b641d249ee3e89232bf9f4eada425d`.
-Results below describe concrete probes, not blanket product compatibility.
-[Validated workflow run](https://github.com/HansBug/stateflow-experiments/actions/runs/34692475531) ·
-[Checked-in result summary](research/stateflow-observed.json).
+生命周期、层次状态、动作顺序、状态活动记录、转移优先级、覆盖率、测试管理器和 FlowRepair 回放均在公开 MATLAB Actions 中有可复现实验。SLDV 与 Simulink Coder 在当前环境因 licence 不可用而明确记录为 blocked。详细结果见 [`research/stateflow-observed.json`](research/stateflow-observed.json)。
 
-| Workflow | Observed result | Evidence |
-|---|---|---|
-| Create, inspect, simulate, save and reload a hierarchical chart | Passed | `core-result.json`, `source-model.json`, `baseline.json` |
-| Mutate a guard, observe a fault, repair it and replay | Passed | `faulty.json`, `repair.json` |
-| Reopen the saved repair in a separate MATLAB process; retain SSIDs | Passed | `persistence-result.json` |
-| Condition/transition actions, hierarchical entry/exit/during ordering | Passed | `action-order.json`, `semantics-result.json` |
-| State activity logging; conflicting guards and priority edits | Passed | `state-activity.json`, `priority.json` |
-| Native coverage collection and HTML report | Passed | `coverage-result.json`, coverage reports |
-| External harness creation and simulation | Passed | `harness-result.json` |
-| Simulink Test Manager simulation smoke test | Passed | `test-manager-result.json`, `test-results.mldatx` |
-| Load and inspect seven original FlowRepair model files | Passed | `academic-models.json` |
-| Replay the original Door correct/faulty pair | Fault reproduced | `academic-replay.json`, `door-original-traces.mat` |
-| Apply the known Door source/priority correction and replay a saved candidate | Reference trace restored | `academic-repair.json` |
-| SLDV test generation, property proving and generated witness replay | Blocked by licensing in this environment | `sldv-result.json`, `proof-result.json`; see licensing below |
-| Simulink Coder C generation | Blocked by licensing in this environment | `codegen-result.json` |
+原始 Door 正确/故障模型的回放产生 30,001 个样本，其中 15,995 个不同，首个差异在 14.006 秒。修复探针恢复了参考轨迹；这不是通用自动修复算法。
 
-The original Door replay produced **30,001 samples**, **15,995 differing samples**,
-and a first difference at **14.006 seconds**. It uses the embedded Signal Builder
-scenario and the full original plant, with the original solver and timing.
-The separate known-reference repair probe edits transition SSID 16's source and
-priority, saves a candidate, and checks its trace against the correct model.
-That probe is an API smoke test supplied with the correct-model difference; it
-is not an automatic repair algorithm or evidence of repair generalization.
-
-## Run and inspect
-
-Run `Stateflow experiments` with `workflow_dispatch`, or push a change. Each
-MATLAB step is a separate process. The workflow uploads an artifact named
-`stateflow-R2022b-<attempt>` containing JSON results, traces, reports, and the
-synthetic models. Third-party source/candidate model files remain in the pinned
-external checkout and are not included in the uploaded artifacts.
+## 运行与查看
 
 ```bash
 gh workflow run stateflow.yml --repo HansBug/stateflow-experiments
-gh run list --repo HansBug/stateflow-experiments
 gh run download RUN_ID --repo HansBug/stateflow-experiments --dir evidence
 ```
 
-Required behavioral assertions fail the workflow on a mismatch. Optional
-license probes explicitly report `license-unavailable`; a green workflow does
-not mean that those blocked analysis or generation operations ran. The SLDV
-replay/proof and C-generation branches remain unvalidated past their licensing
-boundaries. Test Manager currently exercises simulation infrastructure, and
-coverage collection does not claim complete decision or MC/DC coverage.
-The Test Manager process also emitted AWT `HeadlessException` messages during
-teardown while returning a passed test result and exit code zero. This run
-validates batch execution and exported results; interactive GUI use was not tested.
+导入 workflow 使用 MATLAB R2025b、Ubuntu 24.04、Python 3.11；会下载固定版本的 FlowRepair、CoCoSim、SLNET sample 和 MARS，抽取源事实并上传映射、拒绝和语义报告。完整批次为 **671 个文件、709 个 Chart、2 个通过（1 个公开、1 个自建）**；其余 707 个明确记录为 unsupported。分母和首个拒绝原因见 [批次结果](docs/import-results.zh.md)。
 
-## Licensing findings
+## Licence 与运行环境
 
-[MATLAB Actions documentation](https://github.com/matlab-actions/setup-matlab#licensing)
-states that public projects automatically receive product licenses except for
-transformation products. Installation itself succeeded for Stateflow, Simulink
-Test, Coverage, Design Verifier and Coder, including their dependencies.
+MATLAB Actions 的公开项目 licence 路径可以安装 Stateflow、Simulink Test、Coverage、Design Verifier 和 Coder，但本地 R2022b 实测只有仿真、覆盖率和 Test Manager 可用；SLDV 与 Coder 分别缺少对应 licence。Docker 可以固定环境，不能提供 MATLAB licence；当前采用文件交换的 MATLAB batch 路径，不依赖 MATLAB Engine for Python。
 
-Actual R2022b execution established a narrower usable set: simulation, coverage
-and Test Manager work; SLDV's model-representation stage reported
-`Unable to check out the Simulink Design Verifier license which is needed to translate design`.
-The Coder probe reported a missing `Real-Time_Workshop` license. The failed native
-SLDV attempts are preserved in
-[run 34691938079](https://github.com/HansBug/stateflow-experiments/actions/runs/34691938079).
-These findings are about the tested environment, not every MATLAB release or
-institutional license configuration.
+## 导入范围与数据集边界
 
-This route does not provide a local desktop/Docker license. MATLAB batch
-licensing does not support MATLAB Engine APIs for Python, so file-based batch
-execution is the tested integration approach. The public batch-token request
-page stated that new requests were not being accepted when checked on
-2026-09-12. Optional licensed workflows can be revisited when access is available.
+目标是确定、离散、固定周期、单活动路径的控制层次状态机。并行区域、异步事件/消息、连续内部动态、任意函数、history/junction、时间语义和位精确数值在没有专门规则前必须拒绝。原生模型能加载或运行，不等于已经适合 FCSTM 导入。
 
-## Run the import corpus
+当前只做 Stateflow→FCSTM，保留源文件哈希、Chart 路径、SSID、目标元素和假设，暂不反向转换或自动修复。第三方模型和工具保留各自 licence，本仓库只提交清单、散列、统计和自写探针。
 
-```bash
-gh workflow run import.yml --repo HansBug/stateflow-experiments
-gh run download RUN_ID --repo HansBug/stateflow-experiments --dir evidence
-python -m pip install -r requirements.txt
-git clone https://github.com/bzhan/mars.git _external/mars
-git -C _external/mars checkout 5659710bc0fae06d05518bd7d80f11a3138cf679
-python check_import.py
-python convert_corpus.py evidence/stateflow-import-source/corpus-source.json artifacts/converted
-```
+## 来源
 
-The import workflow uses MATLAB **R2025b** on Ubuntu 24.04; the
-older lifecycle/oracle results above use R2022b on Ubuntu 22.04.
-The import workflow fetches pinned FlowRepair, CoCoSim, SLNET-sample and MARS
-models, extracts every candidate with Stateflow, attaches source hashes, and
-uploads `corpus-source.json`, `converted/results.json`, accepted `.fcstm`
-models, source mappings and full semantic reports. Corpus rejections are data;
-the mandatory canary and parser checks fail CI if the implemented path breaks.
-[Successful import run](https://github.com/HansBug/stateflow-experiments/actions/runs/34703956252):
-**671 files → 709 extracted Charts → 2 accepted Charts (1 external + 1 synthetic)**.
-The other 707 Charts are explicitly unsupported. [Measured corpus results](docs/import-results.zh.md) distinguish files, charts,
-synthetic canaries, unsupported features and actual parser/target failures.
-
-## Import and dataset boundaries
-
-Current scope is **one-way Stateflow → FCSTM**, with source mappings for later
-diagnosis and replay. Reverse conversion and source repair are outside this phase.
-The [public model survey](docs/public-models.zh.md) adds FlowRepair, CoCoSim/GPCA,
-SLNET, and MathWorks application sources, with actual file-layout observations.
-
-The intended importer domain is deterministic discrete periodic controllers with
-one active hierarchical path. Parallel regions, asynchronous events/messages,
-continuous internal dynamics, arbitrary host code, and unsupported time/numeric
-semantics require explicit handling or rejection. A native model loading and
-running does not establish import eligibility.
-
-The fixed FlowRepair checkout is
-`6c5ba07962d972d3eade2448e7212faf74e11a50`. The offline XML inventory records
-74 SLX files: 72 contain `sec)` label fragments and 5 contain Integrator blocks.
-These are screening hints. Files include correct models and fault variants;
-they are not 74 independent systems. All seven charts inspected natively have
-inherited activation/sample settings. The Door model includes `after(10,sec)`
-and a continuous plant, so its controller boundary remains to be established.
-
-Reproduce the inventory with:
-
-```bash
-python research/flowrepair_inventory.py \
-  _external/flowrepair/ModelsWithRealFaults research/flowrepair-inventory.json
-```
-
-The independent [SysML v2 experiment repository](https://github.com/HansBug/sysmlv2-experiment) successfully reuses
-the official Pilot workspace to validate models, link references across
-resources, inspect typed state/transition elements and source spans, and reject
-an unresolved type. It does not provide a SysML state-machine execution oracle
-or unrestricted SysML-to-FCSTM semantic equivalence.
-
-## Sources
-
-- [MATLAB Actions licensing](https://github.com/matlab-actions/setup-matlab#licensing)
-- [Batch licensing limitations](https://github.com/mathworks-ref-arch/matlab-dockerfile/blob/main/alternates/non-interactive/MATLAB-BATCH.md#limitations)
-- [Batch token availability](https://www.mathworks.com/support/batch-tokens.html)
+- [MATLAB Actions licence](https://github.com/matlab-actions/setup-matlab#licensing)
 - [Stateflow API](https://www.mathworks.com/help/stateflow/api/overview-of-the-stateflow-api.html)
-- [FlowRepair repository](https://github.com/aitorarrietamarcos/StateflowRepairTool)
-- [FlowRepair paper](https://doi.org/10.1016/j.infsof.2025.108010)
-- [Hype Meets Reality](https://arxiv.org/abs/2608.19347)
-- [Official SysML v2 Pilot](https://github.com/Systems-Modeling/SysML-v2-Pilot-Implementation)
+- [FlowRepair](https://github.com/aitorarrietamarcos/StateflowRepairTool)
+- [CoCoSim regression-test](https://github.com/coco-team/regression-test)
+- [MARS](https://github.com/bzhan/mars)
+- [SLNET](https://zenodo.org/records/4898432)
 
-Original experiment scripts are MIT licensed. Third-party materials retain their
-own terms. This repository does not redistribute the FlowRepair dataset.
+原始实验脚本采用 MIT；第三方材料按其各自条款使用。
