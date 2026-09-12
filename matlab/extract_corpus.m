@@ -2,7 +2,7 @@ function extract_corpus()
 %EXTRACT_CORPUS Export every discovered source model, including explicit failures.
 mkdir('artifacts');
 cleanup = onCleanup(@() bdclose('all'));
-roots = {'flowrepair', 'cocosim', 'slnet_sample'};
+roots = {'flowrepair', 'cocosim', 'slnet_sample', 'mars'};
 records = {};
 for ri = 1:numel(roots)
     source = roots{ri};
@@ -11,6 +11,8 @@ for ri = 1:numel(roots)
         base = fullfile(base, 'ModelsWithRealFaults');
     elseif strcmp(source, 'cocosim')
         base = fullfile(base, 'stateflow');
+    elseif strcmp(source, 'mars')
+        base = fullfile(base, 'Examples', 'Stateflow');
     end
     files = [dir(fullfile(base, '**', '*.slx')); dir(fullfile(base, '**', '*.mdl'))];
     for fi = 1:numel(files)

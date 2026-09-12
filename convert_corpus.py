@@ -4,7 +4,7 @@ from collections import Counter
 import hashlib
 import json
 from pathlib import Path
-import re
+from source_ast import parse as parse_source, sf, SourceParserError
 
 from pyfcstm.dsl import parse_with_grammar_entry
 from pyfcstm.dsl.error import GrammarParseError
@@ -23,36 +23,38 @@ def items(value):
     return value if isinstance(value, list) else [value]
 
 
-def expression(text, names):
-    text = str(text).strip().replace('~=', '!=').replace('&&', ' and ').replace('||', ' or ')
-    if re.search(r'\b(after|before|at|every|temporalCount)\s*\(', text):
-        raise Unsupported('temporal_logic', text)
-    if re.search(r'[A-Za-z_]\w*\s*\(', text):
-        raise Unsupported('function_call', text)
-    if not text or re.search(r'[^\w\s.()+*/%<>=!&|~^-]', text):
-        raise Unsupported('expression_syntax', text)
-    def rename(match):
-        word = match.group()
-        if word in names:
-            return names[word]
-        if word in ('true', 'false', 'and', 'or', 'not'):
-            return word
-        # Scientific notation is handled by matching whole numeric tokens first.
-        raise Unsupported('unknown_symbol', word)
-    tokens = re.compile(r'\d+(?:\.\d*)?(?:[eE][+-]?\d+)?|[A-Za-z_]\w*')
-    return tokens.sub(lambda m: m.group() if m.group()[0].isdigit() else rename(m), text)
+def expression(node, names):
+    if isinstance(node, sf.Var):
+        if node.name not in names:
+            raise Unsupported('unknown_symbol', node.name)
+        return names[node.name]
+    if isinstance(node, sf.AConst) and isinstance(node.value, (int, float)):
+        return json.dumps(node.value)
+    if isinstance(node, sf.BConst):
+        return json.dumps(node.value)
+    if isinstance(node, sf.RelExpr):
+        return '(' + expression(node.expr1, names) + ' ' + node.op + ' ' + expression(node.expr2, names) + ')'
+    if isinstance(node, (sf.OpExpr, sf.LogicExpr)):
+        op = {'&&': 'and', '||': 'or', '~': 'not'}.get(node.op_name, node.op_name)
+        args = [expression(arg, names) for arg in node.exprs]
+        if op in ('-', 'not') and len(args) == 1:
+            return '(' + op + ' ' + args[0] + ')'
+        if op in ('+', '-', '*', '/', 'and', 'or') and len(args) == 2:
+            return '(' + args[0] + ' ' + op + ' ' + args[1] + ')'
+        raise Unsupported('operator', node.op_name)
+    raise Unsupported('expression_kind', type(node).__name__)
 
 
-def assignments(text, names):
-    result = []
-    for statement in text.split(';'):
-        if not statement.strip():
-            continue
-        match = re.fullmatch(r'\s*([A-Za-z_]\w*)\s*=\s*([^=].*?)\s*', statement, re.S)
-        if match is None or match[1] not in names:
-            raise Unsupported('action_syntax', statement)
-        result.append(f'{names[match[1]]} = {expression(match[2], names)};')
-    return ' '.join(result)
+def assignments(node, names):
+    if isinstance(node, sf.Skip):
+        return ''
+    if isinstance(node, sf.Sequence):
+        return assignments(node.cmd1, names) + ' ' + assignments(node.cmd2, names)
+    if isinstance(node, sf.Assign) and isinstance(node.lname, sf.Var):
+        if node.lname.name not in names:
+            raise Unsupported('assignment_target', node.lname.name)
+        return names[node.lname.name] + ' = ' + expression(node.expr, names) + ';'
+    raise Unsupported('action_kind', type(node).__name__)
 
 
 def lower(chart):
@@ -88,7 +90,7 @@ def lower(chart):
         names[variable['name']] = f'v{index}'
     for variable in data:
         target_type = 'float' if variable['type'] in ('double', 'single') else 'int'
-        initial = expression(variable['initial'] or '0', names)
+        initial = expression(parse_source(variable['initial'] or '0', 'expr'), names)
         if variable['type'] == 'boolean':
             initial = {'true': '1', 'false': '0'}.get(initial, initial)
         declarations.append(f'def {target_type} {names[variable["name"]]} = {initial};')
@@ -106,11 +108,14 @@ def lower(chart):
         # native creation/simulation probe exercises this exact representation.
         if src is None and label == '?':
             label = ''
-        match = re.fullmatch(r'(?:\[([^\]]+)\])?\s*(?:/(.*))?', label, re.S)
-        if match is None:
-            raise Unsupported('transition_label', label)
-        guard = '' if match[1] is None else ' : if [' + expression(match[1], names) + ']'
-        effect = '' if match[2] is None else ' effect { ' + assignments(match[2], names) + ' }'
+        parsed = parse_source(label, 'transition')
+        if parsed.event is not None:
+            raise Unsupported('transition_event', type(parsed.event).__name__)
+        if not isinstance(parsed.cond_act, sf.Skip):
+            raise Unsupported('condition_action', str(t['ssid']))
+        guard = '' if parsed.cond is None else ' : if [' + expression(parsed.cond, names) + ']'
+        body = assignments(parsed.tran_act, names)
+        effect = ' effect { ' + body + ' }' if body else ''
         source_name = '[*]' if src is None else f'S{src}'
         transitions[owner].append((src, f'{source_name} -> S{dst}{guard}{effect};', t['ssid']))
     def target_path(sid):
@@ -120,16 +125,13 @@ def lower(chart):
         lines = [indent + f'state {name} {{']
         if sid is not None:
             state = states[sid]
-            pieces = state['label'].split('\n', 1)
-            rest = pieces[1] if len(pieces) > 1 else ''
-            clauses = re.split(r'\b(entry|en|during|du|exit|ex)\s*:', rest)
-            if clauses[0].strip():
-                raise Unsupported('state_label', state['label'])
-            for action, body in zip(clauses[1::2], clauses[2::2]):
-                action = {'en': 'enter', 'entry': 'enter', 'du': 'during', 'ex': 'exit'}.get(action, action)
+            parsed = parse_source(state['label'], 'state_op')
+            for action, operation in [('enter', parsed.en_op), ('during', parsed.du_op), ('exit', parsed.ex_op)]:
+                if operation is None:
+                    continue
                 if action == 'during' and children[sid]:
                     raise Unsupported('composite_during', state['name'])
-                lines.append(indent + '    ' + action + ' { ' + assignments(body, names) + ' }')
+                lines.append(indent + '    ' + action + ' { ' + assignments(operation.op, names) + ' }')
             mapping.append({'kind': 'state', 'source_ssid': sid, 'source_name': state['name'], 'target': target_path(sid)})
         if children[sid] and not any(src is None for src, _, _ in transitions[sid]):
             raise Unsupported('initial_transition_count', name)
@@ -176,6 +178,9 @@ def run(source, output):
             except Unsupported as error:
                 # Unsupported: lower() names source constructs outside the implemented subset.
                 row.update(status='unsupported', code=error.code, detail=str(error))
+            except SourceParserError as error:
+                # SourceParserError: the pinned external source parser rejected a label/expression.
+                row.update(status='source_parser_error', code=type(error).__name__, detail=str(error))
             except (GrammarParseError, ModelValidationError) as error:
                 # GrammarParseError: generated DSL grammar failure; ModelValidationError: invalid target semantics.
                 row.update(status='target_error', code=type(error).__name__, detail=str(error))
