@@ -10,6 +10,12 @@ running = chart.find('-isa', 'Stateflow.State', 'Name', 'Running');
 idle.LabelString = sprintf('Idle\nentry: y = y*10+1;\nexit: y = y*10+2;');
 active.LabelString = sprintf('Active\nentry: y = y*10+5;\nduring: y = y*10+7;\nexit: y = y*10+2;');
 running.LabelString = sprintf('Running\nentry: y = y*10+6;\nduring: y = y*10+8;\nexit: y = y*10+9;');
+transitions = chart.find('-isa', 'Stateflow.Transition');
+for index = 1:numel(transitions)
+    if isempty(transitions(index).Source) && transitions(index).Destination == idle
+        transitions(index).LabelString = '/y = 0;';
+    end
+end
 edge = chart.find('-isa', 'Stateflow.Transition', 'LabelString', '[u >= 1]');
 edge.LabelString = '[u >= 1]{y = y*10+3;}/y = y*10+4;';
 states = chart.find('-isa', 'Stateflow.State');

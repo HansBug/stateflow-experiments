@@ -1,6 +1,12 @@
 function run_proof()
 %RUN_PROOF Prove a simple invariant, falsify another, and replay its witness.
 cleanup = onCleanup(@() bdclose('all'));
+[licensed, message] = license('checkout', 'Simulink_Design_Verifier');
+if ~licensed
+    write_json('artifacts/proof-result.json', struct('status', 'license-unavailable', ...
+        'message', message, 'proof_executed', false, 'witness_replayed', false));
+    return;
+end
 model = create_controller('property_controller');
 root = sfroot;
 chart = root.find('-isa', 'Stateflow.Chart', 'Path', [model '/Controller']);

@@ -7,8 +7,9 @@ if ~licensed
         'feature', 'Real-Time_Workshop', 'message', message, 'build_executed', false));
     return;
 end
-model = create_controller();
+model = create_controller('codegen_controller');
 set_param(model, 'SystemTargetFile', 'grt.tlc', 'GenCodeOnly', 'on');
+save_system(model, fullfile(pwd, 'artifacts', [model '.slx']));
 slbuild(model);
 generated = dir(fullfile([model '_grt_rtw'], '*.c'));
 assert(~isempty(generated), 'Experiment:Codegen', 'No generated C files.');

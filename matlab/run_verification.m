@@ -31,6 +31,12 @@ write_json('artifacts/test-manager-result.json', struct('outcome', char(testResu
 assert(strcmp(char(testResults.Outcome), 'Passed'), ...
     'Experiment:TestManager', 'Test Manager simulation did not pass.');
 sltest.testmanager.exportResults(testResults, fullfile(pwd, 'artifacts', 'test-results.mldatx'));
+[licensed, message] = license('checkout', 'Simulink_Design_Verifier');
+if ~licensed
+    write_json('artifacts/sldv-result.json', struct('status', 'license-unavailable', ...
+        'message', message, 'generated_tests_replayed', false));
+    return;
+end
 options = sldvoptions;
 options.Mode = 'TestGeneration';
 options.MaxProcessTime = 60;

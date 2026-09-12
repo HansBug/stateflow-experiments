@@ -54,4 +54,29 @@ write_json('artifacts/academic-replay.json', struct('status', 'fault-reproduced'
     'sample_count', numel(difference), 'different_samples', nnz(difference), ...
     'max_absolute_difference', max(difference), 'first_difference_time', observations{1}.time(first), ...
     'import_eligibility', 'not-established: continuous plant and after(10,sec) need an explicit controller boundary'));
+
+% This is a reference-guided API repair smoke test, not a repair algorithm.
+% The pinned correct chart identifies the known erroneous transition source.
+reference = records{1}.charts{1}.transitions;
+referenceEdge = reference([reference.ssid] == 16);
+assert(numel(referenceEdge) == 1 && referenceEdge.source_ssid == 5);
+load_system(fullfile(base, 'door_1', 'Door_Model_Incorrect.slx'));
+root = sfroot;
+machine = root.find('-isa', 'Stateflow.Machine', 'Name', 'Door_Model_Incorrect');
+chart = machine.find('-isa', 'Stateflow.Chart');
+edge = chart.find('-isa', 'Stateflow.Transition', 'SSIdNumber', 16);
+assert(numel(edge) == 1 && edge.Source.SSIdNumber == 3);
+edge.Source = chart.find('-isa', 'Stateflow.State', 'SSIdNumber', referenceEdge.source_ssid);
+edge.ExecutionOrder = referenceEdge.priority;
+save_system('Door_Model_Incorrect', fullfile(pwd, '_external', 'Door_Model_Repaired.slx'));
+signalbuilder('Door_Model_Repaired/Signal Builder', 'activegroup', 1);
+output = sim('Door_Model_Repaired', 'ReturnWorkspaceOutputs', 'on');
+repaired = output.get('out1');
+assert(isequal(repaired.Time, observations{1}.time));
+assert(isequal(repaired.Data, observations{1}.output), ...
+    'Experiment:AcademicRepair', 'Reference-guided source repair did not recover the trace.');
+write_json('artifacts/academic-repair.json', struct('status', 'reference-trace-restored', ...
+    'method', 'known-reference-diff API smoke test, not automated repair', ...
+    'transition_ssid', 16, 'old_source_ssid', 3, 'new_source_ssid', 5, ...
+    'new_priority', referenceEdge.priority, 'checked_test_groups', 1));
 end

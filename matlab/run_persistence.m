@@ -1,10 +1,13 @@
 function run_persistence()
 %RUN_PERSISTENCE Verify source identities and repaired behavior in a new process.
 cleanup = onCleanup(@() bdclose('all'));
+repair = jsondecode(fileread('artifacts/repair.json'));
 load_system(fullfile('artifacts', 'periodic_controller.slx'));
 root = sfroot;
 chart = root.find('-isa', 'Stateflow.Chart', 'Path', 'periodic_controller/Controller');
 snapshot = snapshot_chart(chart);
+edge = chart.find('-isa', 'Stateflow.Transition', 'SSIdNumber', repair.transition_ssid);
+assert(numel(edge) == 1 && strcmp(edge.LabelString, repair.repaired_label));
 saved = jsondecode(fileread('artifacts/source-model.json'));
 assert(isequal(sort([snapshot.states.ssid]), sort([saved.states.ssid])));
 assert(isequal(sort([snapshot.transitions.ssid]), sort([saved.transitions.ssid])));
