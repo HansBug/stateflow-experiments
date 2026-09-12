@@ -1,6 +1,8 @@
-function model = create_controller()
+function model = create_controller(model)
 %CREATE_CONTROLLER Build a single-rate hierarchical chart with ordered actions.
-model = 'periodic_controller';
+if nargin == 0
+    model = 'periodic_controller';
+end
 bdclose('all');
 load_system('sflib');
 new_system(model);
@@ -20,10 +22,12 @@ input = Stateflow.Data(chart);
 input.Name = 'u';
 input.Scope = 'Input';
 input.DataType = 'double';
+input.Props.Array.Size = '1';
 output = Stateflow.Data(chart);
 output.Name = 'y';
 output.Scope = 'Output';
 output.DataType = 'double';
+output.Props.Array.Size = '1';
 idle = Stateflow.State(chart);
 idle.Position = [30 30 100 80];
 idle.LabelString = sprintf('Idle\nentry: y = 0;');
@@ -37,10 +41,16 @@ initial = Stateflow.Transition(chart);
 initial.Destination = idle;
 initial.DestinationOClock = 0;
 initial.SourceEndpoint = [80 0];
+initial.MidPoint = [80 15];
+initial.LabelString = '';
 nested = Stateflow.Transition(active);
 nested.Destination = running;
 nested.DestinationOClock = 0;
 nested.SourceEndpoint = [300 90];
+nested.MidPoint = [302 105];
+nested.LabelString = '';
+assert(nested.getParent == active, 'Experiment:DefaultParent', ...
+    'Default transition geometry must remain inside the containing state.');
 enter = Stateflow.Transition(chart);
 enter.Source = idle;
 enter.Destination = active;
