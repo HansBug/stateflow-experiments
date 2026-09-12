@@ -105,12 +105,16 @@ python check_import.py
 python convert_corpus.py evidence/stateflow-import-source/corpus-source.json artifacts/converted
 ```
 
+The import workflow uses MATLAB **R2025b** on Ubuntu 24.04; the
+older lifecycle/oracle results above use R2022b on Ubuntu 22.04.
 The import workflow fetches pinned FlowRepair, CoCoSim, SLNET-sample and MARS
 models, extracts every candidate with Stateflow, attaches source hashes, and
 uploads `corpus-source.json`, `converted/results.json`, accepted `.fcstm`
 models, source mappings and full semantic reports. Corpus rejections are data;
 the mandatory canary and parser checks fail CI if the implemented path breaks.
-[Measured corpus results](docs/import-results.zh.md) distinguish files, charts,
+[Successful import run](https://github.com/HansBug/stateflow-experiments/actions/runs/34703956252):
+**671 files → 709 extracted Charts → 2 accepted Charts (1 external + 1 synthetic)**.
+The other 707 Charts are explicitly unsupported. [Measured corpus results](docs/import-results.zh.md) distinguish files, charts,
 synthetic canaries, unsupported features and actual parser/target failures.
 
 ## Import and dataset boundaries
