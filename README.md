@@ -21,9 +21,9 @@ gh run download RUN_ID --repo HansBug/stateflow-experiments --dir evidence
 
 导入 workflow 使用 MATLAB R2025b、Ubuntu 24.04、Python 3.11；会下载固定版本的 FlowRepair、CoCoSim、SLNET sample 和 MARS，抽取源事实并上传映射、拒绝和语义报告。完整批次为 **671 个文件、709 个 Chart、2 个通过（1 个公开、1 个自建）**；其余 707 个明确记录为 unsupported。分母和首个拒绝原因见 [批次结果](docs/import-results.zh.md)。
 
-## Licence 与运行环境
+## 许可证与运行环境
 
-MATLAB Actions 的公开项目 licence 路径可以安装 Stateflow、Simulink Test、Coverage、Design Verifier 和 Coder，但本地 R2022b 实测只有仿真、覆盖率和 Test Manager 可用；SLDV 与 Coder 分别缺少对应 licence。Docker 可以固定环境，不能提供 MATLAB licence；当前采用文件交换的 MATLAB batch 路径，不依赖 MATLAB Engine for Python。
+MATLAB Actions 的公开项目许可证路径可以安装 Stateflow、Simulink Test、Coverage、Design Verifier 和 Coder，但本地 R2022b 实测只有仿真、覆盖率和 Test Manager 可用；SLDV 与 Coder 分别缺少对应许可证。Docker 可以固定环境，不能提供 MATLAB 许可证；当前采用文件交换的 MATLAB 批处理路径，不依赖 MATLAB Engine for Python。
 
 ## 导入范围与数据集边界
 
