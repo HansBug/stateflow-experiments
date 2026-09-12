@@ -13,7 +13,7 @@
 | 自建 canary | 1 | 1 | 1 | 0 |
 | 合计 | 671 | 709 | 2 | 707 |
 
-所有选定源文件都完成原生抽取，没有 extraction error、no-chart、source-parser error、target error 或 semantic error 记录。**去掉自建例，公开数据是 670 个文件、708 个 Chart，仅 1 个 Chart 转换通过。不能声称大部分公开模型可以转换。** 670 个外部源文件只有 594 种 SHA256 内容，且即使内容不同也可能只是近似变体，不能当作等量独立系统。
+所有选定源文件都完成原生抽取。原转换批次没有 extraction error、no-chart、source-parser error、target error 或 semantic error 记录，但前置拒绝遮住了标签解析失败；[后续独立审计](frontend-audit.zh.md) 对全部 9,292 条标签实测发现适配器拒绝 1,037 条。**去掉自建例，公开数据是 670 个文件、708 个 Chart，仅 1 个 Chart 转换通过。不能声称大部分公开模型可以转换。** 670 个外部源文件只有 594 种 SHA256 内容，且即使内容不同也可能只是近似变体，不能当作等量独立系统。
 
 当前外部 accepted 为 CoCoSim `regression_tests/Hierarchy4.mdl`（SHA256 `b2a183d5d7adf46996f41822e18bc69be24f9d2bf46be3779d45548be69499d0`）。它有两个依据输入条件选择的默认目标，以及各目标的 entry 赋值；不是完整的复杂应用控制器。自建例另覆盖嵌套状态、guard、赋值、entry/exit 和 leaf during，CI 检查的是本次 MATLAB 现场抽取的 canary。
 
@@ -41,7 +41,7 @@ FlowRepair 的首个障碍为 data_shape 30、junction 39、unknown_symbol 3、t
 
 接受判据是声明的周期控制器抽象下的目标有效性。源宿主调度、`-1` 继承采样、位宽/溢出、浮点细节和完整逐拍等价没有由此得到证明。映射保留配置与假设，支持后续环境建模、源定位和诊断实验，不要求反向转换。
 
-对扩大覆盖最值得先核实的是：用官方编译/项目上下文补齐维度与类型；参考 MARS/CoCoSim 已有语义实现处理 junction 路径，严格区分 condition action 与选中路径后的 effect。事件、函数、并行仍需各自规则，不能为了提高成功率删除它们。公开语料目前主要验证了前端可获取性和拒绝边界，不能代替后续语义对照或诊断算法评价。
+对扩大覆盖最值得先处理的是：用官方编译/项目上下文补齐维度与类型；补足有限的 MARS 标签 grammar；参考 MARS/CoCoSim 已有语义实现处理 junction 路径，严格区分 condition action 与选中路径后的 effect。[原生复核](frontend-audit.zh.md) 已确认 Door 的 7 个 `-1` 尺寸声明在编译后全部是 scalar，当前拒绝来自我们的上下文缺失。事件、函数、并行仍需各自规则，不能为了提高成功率删除它们。公开语料目前主要验证了前端可获取性和拒绝边界，不能代替后续语义对照或诊断算法评价。
 
 ## 环境证据
 

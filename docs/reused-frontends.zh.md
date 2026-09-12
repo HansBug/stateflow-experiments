@@ -23,6 +23,8 @@
 
 ## MARS 也需要边界检查
 
+[全标签及官方编译对照审计](frontend-audit.zh.md) 已发现 970 条标签被 upstream 和适配器共同拒绝，另有 67 条由适配器主动拒绝。原生合法的 MATLAB/C 注释探针也被两者拒绝。MARS 仍是已接通的有限前端，不能用早期 canary 或转换器的前置拒绝推断其语法覆盖已经充分。
+
 MARS 仓库公开了 Stateflow→HCSP、Stateflow→Isabelle 和形式操作语义相关实现。这里复用的是这些工作已有的语言解析部分；没有声称继承它们的语义证明。实际接入时发现 upstream transformer 对无 `entry:` 等角色的单条赋值会丢弃，而对 Sequence 又可能当成 entry。我们的包装明确拒绝这种输入，避免静默丢动作。
 
 MARS 的 `SL_Diagram(location)` 图读取入口对文件调用 `minidom.parse`，其转换测试使用导出的 `.xml`。它不能被当作已经验证过的通用 SLX/MDL 容器读取器。该语料还有 238 个 XML、104 个 Isabelle theory 和 129 个文本产物；本次原生批量器只枚举 456 SLX + 4 MDL，避免把导出物重复算成源模型。

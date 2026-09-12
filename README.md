@@ -7,6 +7,7 @@ or repository license secret was supplied to these experiments.
 [公开模型与文件格式调查](docs/public-models.zh.md) ·
 [单向导入边界](docs/import-architecture.zh.md) ·
 [现成工具比较](docs/reused-frontends.zh.md) ·
+[失败归因复核](docs/frontend-audit.zh.md) ·
 [Separate SysML v2 experiments](https://github.com/HansBug/sysmlv2-experiment) ·
 [Public workflow runs](https://github.com/HansBug/stateflow-experiments/actions)
 
