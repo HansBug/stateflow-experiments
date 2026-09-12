@@ -1,0 +1,136 @@
+{
+  "run": "https://github.com/HansBug/stateflow-experiments/actions/runs/34692475531",
+  "tested_revision": "add4a279d6b641d249ee3e89232bf9f4eada425d",
+  "environment": {
+    "matlab_release": "R2022b",
+    "runner": "ubuntu-22.04",
+    "personal_license_or_secret_supplied": false
+  },
+  "results": {
+    "core-result.json": {
+      "status": "passed",
+      "checks": [
+        "create",
+        "source-extraction",
+        "hierarchical-actions",
+        "save-reload",
+        "stable-ssids",
+        "input-replay",
+        "guard-mutation",
+        "repair"
+      ]
+    },
+    "persistence-result.json": {
+      "status": "passed",
+      "checks": [
+        "separate-process-load",
+        "stable-state-and-transition-ssids",
+        "saved-repair-replay"
+      ]
+    },
+    "semantics-result.json": {
+      "status": "passed",
+      "checks": [
+        "condition-vs-transition-action",
+        "nested-entry-exit-during-order",
+        "state-activity-logging",
+        "conflicting-guards",
+        "priority-edit"
+      ]
+    },
+    "coverage-result.json": {
+      "status": "passed"
+    },
+    "harness-result.json": {
+      "status": "created-and-simulated",
+      "name": "controller_harness"
+    },
+    "test-manager-result.json": {
+      "outcome": "Passed"
+    },
+    "academic-replay.json": {
+      "status": "fault-reproduced",
+      "source": "ModelsWithRealFaults/door_1",
+      "test_group": 1,
+      "sample_count": 30001,
+      "different_samples": 15995,
+      "max_absolute_difference": 1,
+      "first_difference_time": 14.006,
+      "import_eligibility": "not-established: continuous plant and after(10,sec) need an explicit controller boundary"
+    },
+    "academic-repair.json": {
+      "status": "reference-trace-restored",
+      "method": "known-reference-diff API smoke test, not automated repair",
+      "transition_ssid": 16,
+      "old_source_ssid": 3,
+      "new_source_ssid": 5,
+      "new_priority": 2,
+      "checked_test_groups": 1
+    },
+    "sldv-result.json": {
+      "status": "license-unavailable",
+      "message": "License checkout failed.\nLicense Manager Error -5\nCannot find a license for Simulink_Design_Verifier.\n",
+      "generated_tests_replayed": false
+    },
+    "proof-result.json": {
+      "status": "license-unavailable",
+      "message": "License checkout failed.\nLicense Manager Error -5\nCannot find a license for Simulink_Design_Verifier.\n",
+      "proof_executed": false,
+      "witness_replayed": false
+    },
+    "codegen-result.json": {
+      "status": "license-unavailable",
+      "feature": "Real-Time_Workshop",
+      "message": "License checkout failed.\nLicense Manager Error -5\nCannot find a license for Real-Time_Workshop.\n",
+      "build_executed": false
+    }
+  },
+  "action_order": {
+    "time": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "output": [
+      1,
+      132456,
+      13245678.0,
+      13245678921.0
+    ]
+  },
+  "baseline": {
+    "time": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "output": [
+      0,
+      11,
+      22,
+      0,
+      11,
+      22
+    ],
+    "input_time": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "input": [
+      0,
+      1,
+      1,
+      0,
+      1,
+      1
+    ]
+  }
+}
