@@ -4,8 +4,9 @@ Public GitHub Actions experiments for using native MathWorks Stateflow as a
 source-model frontend and independent execution oracle. No user MATLAB license
 or repository license secret was supplied to these experiments.
 
-[中文技术方案与研究边界](docs/import-architecture.zh.md) ·
-[SysML v2 linking probe](research/sysml/README.md) ·
+[公开模型与文件格式调查](docs/public-models.zh.md) ·
+[单向导入边界](docs/import-architecture.zh.md) ·
+[Separate SysML v2 experiments](https://github.com/HansBug/sysmlv2-experiment) ·
 [Public workflow runs](https://github.com/HansBug/stateflow-experiments/actions)
 
 This is an experiment repository. It does not implement a Stateflow-to-FCSTM
@@ -91,6 +92,11 @@ page stated that new requests were not being accepted when checked on
 
 ## Import and dataset boundaries
 
+Current scope is **one-way Stateflow → FCSTM**, with source mappings for later
+diagnosis and replay. Reverse conversion and source repair are outside this phase.
+The [public model survey](docs/public-models.zh.md) adds FlowRepair, CoCoSim/GPCA,
+SLNET, and MathWorks application sources, with actual file-layout observations.
+
 The intended importer domain is deterministic discrete periodic controllers with
 one active hierarchical path. Parallel regions, asynchronous events/messages,
 continuous internal dynamics, arbitrary host code, and unsupported time/numeric
@@ -112,7 +118,7 @@ python research/flowrepair_inventory.py \
   _external/flowrepair/ModelsWithRealFaults research/flowrepair-inventory.json
 ```
 
-The independent [SysML v2 probe](research/sysml/README.md) successfully reuses
+The independent [SysML v2 experiment repository](https://github.com/HansBug/sysmlv2-experiment) successfully reuses
 the official Pilot workspace to validate models, link references across
 resources, inspect typed state/transition elements and source spans, and reject
 an unresolved type. It does not provide a SysML state-machine execution oracle

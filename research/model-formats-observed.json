@@ -1,0 +1,266 @@
+[
+  {
+    "file": "OperatingModeAndErrorLogic.slx",
+    "bytes": 126398,
+    "sha256": "b2906625b159ae7f026eff656c690cd1bcb810c87e44725ead34f908c606b233",
+    "format": "zip-xml",
+    "parts": [
+      "simulink/systems/system_root.xml",
+      "simulink/systems/system_9.xml",
+      "[Content_Types].xml",
+      "_rels/.rels",
+      "simulink/_rels/blockdiagram.xml.rels",
+      "simulink/_rels/configSetInfo.xml.rels",
+      "simulink/stateflow/_rels/machine.xml.rels",
+      "simulink/systems/_rels/system_root.xml.rels",
+      "metadata/coreProperties.xml",
+      "metadata/mwcoreProperties.xml",
+      "metadata/mwcorePropertiesExtension.xml",
+      "metadata/mwcorePropertiesReleaseInfo.xml",
+      "metadata/thumbnail.png",
+      "simulink/bddefaults.xml",
+      "simulink/blockdiagram.xml",
+      "simulink/configSet0.xml",
+      "simulink/configSetInfo.xml",
+      "simulink/graphicalInterface.json",
+      "simulink/hdlParams.xml",
+      "simulink/modelDictionary.xml",
+      "simulink/stateflow/chart_153.xml",
+      "simulink/stateflow/machine.xml",
+      "simulink/windowsInfo.xml"
+    ],
+    "charts": [
+      {
+        "part": "simulink/stateflow/chart_153.xml",
+        "id": "153",
+        "name": "OperatingModeManagement",
+        "counts": {
+          "state": 15,
+          "transition": 26,
+          "junction": 5,
+          "data": 8,
+          "event": 0
+        },
+        "and_state_count": 2,
+        "time_label_count": 1,
+        "chart_properties": {
+          "decomposition": "CLUSTER_CHART",
+          "actionLanguage": "2"
+        }
+      }
+    ]
+  },
+  {
+    "file": "HEVPowerSplitControl_refsub.mdl",
+    "bytes": 255149,
+    "sha256": "9b02ccfd10fc8143e47289f27d2861d53504033bfebef7f0eb39e13f7f650c7e",
+    "format": "opc-text-xml",
+    "parts": [
+      "/[Content_Types].xml",
+      "/_rels/.rels",
+      "/metadata/coreProperties.xml",
+      "/metadata/mwcoreProperties.xml",
+      "/metadata/mwcorePropertiesExtension.xml",
+      "/metadata/mwcorePropertiesReleaseInfo.xml",
+      "/simulink/_rels/blockdiagram.xml.rels",
+      "/simulink/_rels/configSetInfo.xml.rels",
+      "/simulink/bddefaults.xml",
+      "/simulink/blockdiagram.xml",
+      "/simulink/configSet0.xml",
+      "/simulink/configSetInfo.xml",
+      "/simulink/graphicalInterface.xml",
+      "/simulink/modelDictionary.xml",
+      "/simulink/plugins/SimscapeModelParametersPlugin.xml",
+      "/simulink/stateflow/_rels/machine.xml.rels",
+      "/simulink/stateflow/chart_111.xml",
+      "/simulink/stateflow/chart_62.xml",
+      "/simulink/stateflow/chart_81.xml",
+      "/simulink/stateflow/machine.xml",
+      "/simulink/systems/_rels/system_2918.xml.rels",
+      "/simulink/systems/_rels/system_3130.xml.rels",
+      "/simulink/systems/_rels/system_3222.xml.rels",
+      "/simulink/systems/_rels/system_3356.xml.rels",
+      "/simulink/systems/_rels/system_3504.xml.rels",
+      "/simulink/systems/_rels/system_3683.xml.rels",
+      "/simulink/systems/_rels/system_root.xml.rels",
+      "/simulink/systems/system_15380.xml",
+      "/simulink/systems/system_15381.xml",
+      "/simulink/systems/system_2918.xml",
+      "/simulink/systems/system_2999.xml",
+      "/simulink/systems/system_3010.xml",
+      "/simulink/systems/system_3130.xml",
+      "/simulink/systems/system_3181.xml",
+      "/simulink/systems/system_3192.xml",
+      "/simulink/systems/system_3222.xml",
+      "/simulink/systems/system_3320.xml",
+      "/simulink/systems/system_3356.xml",
+      "/simulink/systems/system_3358.xml",
+      "/simulink/systems/system_3492.xml",
+      "/simulink/systems/system_3504.xml",
+      "/simulink/systems/system_3505.xml",
+      "/simulink/systems/system_3506.xml",
+      "/simulink/systems/system_3683.xml",
+      "/simulink/systems/system_3692.xml",
+      "/simulink/systems/system_3710.xml",
+      "/simulink/systems/system_3715.xml",
+      "/simulink/systems/system_root.xml",
+      "/simulink/windowsInfo.xml"
+    ],
+    "charts": [
+      {
+        "part": "/simulink/stateflow/chart_111.xml",
+        "id": "111",
+        "name": "Engine and MG1 Controller/Engine On Off",
+        "counts": {
+          "state": 5,
+          "transition": 26,
+          "junction": 11,
+          "data": 7,
+          "event": 0
+        },
+        "and_state_count": 0,
+        "time_label_count": 0,
+        "chart_properties": {
+          "decomposition": "CLUSTER_CHART",
+          "actionLanguage": "2"
+        }
+      },
+      {
+        "part": "/simulink/stateflow/chart_62.xml",
+        "id": "62",
+        "name": "Stopping Brake/Brake On Near Stopping",
+        "counts": {
+          "state": 3,
+          "transition": 7,
+          "junction": 2,
+          "data": 5,
+          "event": 0
+        },
+        "and_state_count": 0,
+        "time_label_count": 0,
+        "chart_properties": {
+          "decomposition": "CLUSTER_CHART",
+          "actionLanguage": "2"
+        }
+      },
+      {
+        "part": "/simulink/stateflow/chart_81.xml",
+        "id": "81",
+        "name": "Battery Status/SOC Based States",
+        "counts": {
+          "state": 5,
+          "transition": 14,
+          "junction": 3,
+          "data": 6,
+          "event": 0
+        },
+        "and_state_count": 0,
+        "time_label_count": 0,
+        "chart_properties": {
+          "decomposition": "CLUSTER_CHART",
+          "actionLanguage": "2"
+        }
+      }
+    ]
+  },
+  {
+    "file": "Stateflow_Mealy_example.slx",
+    "bytes": 15667,
+    "sha256": "e5e18e943b4884016f67f1e3e75cbcfaa81f0bcab803cad02ef5a58d83040be8",
+    "format": "zip-xml",
+    "parts": [
+      "metadata/coreProperties.xml",
+      "metadata/mwcoreProperties.xml",
+      "metadata/thumbnail.png",
+      "simulink/blockdiagram.xml",
+      "[Content_Types].xml",
+      "_rels/.rels"
+    ],
+    "charts": [
+      {
+        "part": "simulink/blockdiagram.xml",
+        "id": "28",
+        "name": "Mealy_Subsystem/Mealy_Chart",
+        "counts": {
+          "state": 5,
+          "transition": 6,
+          "junction": 0,
+          "data": 2,
+          "event": 0
+        },
+        "and_state_count": 0,
+        "time_label_count": 0,
+        "chart_properties": {
+          "decomposition": "CLUSTER_CHART",
+          "actionLanguage": "2"
+        }
+      }
+    ]
+  },
+  {
+    "file": "Stateflow_Moore_example.slx",
+    "bytes": 15401,
+    "sha256": "5448f0cebee19d3cfbb9f2ff72b8e394c38644f9bd79b16f438f2ddefa20cc20",
+    "format": "zip-xml",
+    "parts": [
+      "metadata/coreProperties.xml",
+      "metadata/mwcoreProperties.xml",
+      "metadata/thumbnail.png",
+      "simulink/blockdiagram.xml",
+      "[Content_Types].xml",
+      "_rels/.rels"
+    ],
+    "charts": [
+      {
+        "part": "simulink/blockdiagram.xml",
+        "id": "28",
+        "name": "Moore_Subsystem/Moore_Chart",
+        "counts": {
+          "state": 5,
+          "transition": 6,
+          "junction": 0,
+          "data": 2,
+          "event": 0
+        },
+        "and_state_count": 0,
+        "time_label_count": 0,
+        "chart_properties": {
+          "decomposition": "CLUSTER_CHART",
+          "actionLanguage": "2"
+        }
+      }
+    ]
+  },
+  {
+    "file": "GPCA_Alarm.mdl",
+    "bytes": 546522,
+    "sha256": "5f2510f2ef4e228152ba31da4c7c10184c73ab30949ab98400607e80cf4a21ad",
+    "format": "classic-mdl-text",
+    "stateflow_section": true,
+    "declaration_line_counts": {
+      "chart": 1,
+      "state": 85,
+      "transition": 155,
+      "junction": 18,
+      "data": 64,
+      "event": 0
+    },
+    "note": "Lexical screening counts, not parsed or linked Stateflow objects."
+  },
+  {
+    "file": "GPCA_Top_Level_Mode.mdl",
+    "bytes": 84169,
+    "sha256": "fb31b8e3255ab5ecda4b285f8216e54a903a50fa564cca88af3b491987919ddc",
+    "format": "classic-mdl-text",
+    "stateflow_section": true,
+    "declaration_line_counts": {
+      "chart": 1,
+      "state": 9,
+      "transition": 11,
+      "junction": 2,
+      "data": 13,
+      "event": 0
+    },
+    "note": "Lexical screening counts, not parsed or linked Stateflow objects."
+  }
+]

@@ -1,0 +1,37 @@
+name: Stateflow import corpus
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  extract:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: aitorarrietamarcos/StateflowRepairTool
+          ref: 6c5ba07962d972d3eade2448e7212faf74e11a50
+          path: _external/flowrepair
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: coco-team/regression-test
+          ref: 70369bce666880805dcfdc325139ecdc8938a42d
+          path: _external/cocosim
+          persist-credentials: false
+      - uses: matlab-actions/setup-matlab@v3
+        with:
+          release: R2022b
+          products: Simulink Stateflow
+          cache: true
+      - uses: matlab-actions/run-command@v3
+        with:
+          command: addpath('matlab'); extract_corpus
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: stateflow-import-source
+          path: artifacts/corpus-source.json
+          if-no-files-found: error

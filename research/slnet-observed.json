@@ -1,0 +1,47 @@
+{
+  "archive": "SLNET_v1/SLNET_GitHub/21655911.zip",
+  "sha256": "3f03f51797b905dad905bc3e0d046bedef91332bdab260ada225d56cf1a45959",
+  "members": [
+    "Stateflow_examples-master/",
+    "Stateflow_examples-master/LICENSE",
+    "Stateflow_examples-master/README.md",
+    "Stateflow_examples-master/Stateflow_Mealy_example.slx",
+    "Stateflow_examples-master/Stateflow_Moore_example.slx",
+    "Stateflow_examples-master/mealy.png",
+    "Stateflow_examples-master/mealy_rtl/",
+    "Stateflow_examples-master/mealy_rtl/Mealy_Chart.v",
+    "Stateflow_examples-master/mealy_rtl/Mealy_Subsystem.v",
+    "Stateflow_examples-master/moore.png",
+    "Stateflow_examples-master/moore_rtl/",
+    "Stateflow_examples-master/moore_rtl/Moore_Chart.v",
+    "Stateflow_examples-master/moore_rtl/Moore_Subsystem.v"
+  ],
+  "models": [
+    {
+      "path": "Stateflow_examples-master/Stateflow_Mealy_example.slx",
+      "sha256": "e5e18e943b4884016f67f1e3e75cbcfaa81f0bcab803cad02ef5a58d83040be8",
+      "stateflow_parts": [],
+      "actual_stateflow_part": "simulink/blockdiagram.xml (embedded Stateflow subtree)"
+    },
+    {
+      "path": "Stateflow_examples-master/Stateflow_Moore_example.slx",
+      "sha256": "5448f0cebee19d3cfbb9f2ff72b8e394c38644f9bd79b16f438f2ddefa20cc20",
+      "stateflow_parts": [],
+      "actual_stateflow_part": "simulink/blockdiagram.xml (embedded Stateflow subtree)"
+    }
+  ],
+  "method": "HTTP range reads: central directory, README, SQLite, and one project archive. No full corpus scan.",
+  "sqlite": {
+    "file": "SLNET_v1/slnet_v1.sqlite",
+    "sha256": "c9d21630f5147e6e6a6cf226536e6720be86bb92d3523dff37f4b7ff06b345d7",
+    "projects": {
+      "GitHub": 225,
+      "MATLABCentral": 2612
+    },
+    "listed_model_files": {
+      "GitHub": 2088,
+      "MATLABCentral": 7029
+    },
+    "note": "9117 listed Simulink model files, not a Stateflow count or an eligible-model count."
+  }
+}
