@@ -2,14 +2,14 @@ function extract_corpus()
 %EXTRACT_CORPUS Export every discovered source model, including explicit failures.
 mkdir('artifacts');
 cleanup = onCleanup(@() bdclose('all'));
-roots = {'flowrepair', 'cocosim'};
+roots = {'flowrepair', 'cocosim', 'slnet_sample'};
 records = {};
 for ri = 1:numel(roots)
     source = roots{ri};
     base = fullfile(pwd, '_external', source);
     if strcmp(source, 'flowrepair')
         base = fullfile(base, 'ModelsWithRealFaults');
-    else
+    elseif strcmp(source, 'cocosim')
         base = fullfile(base, 'stateflow');
     end
     files = [dir(fullfile(base, '**', '*.slx')); dir(fullfile(base, '**', '*.mdl'))];
@@ -23,17 +23,20 @@ for ri = 1:numel(roots)
             % releases or invalid source models; snapshot properties may be unavailable.
             % Each failure is a dataset result, never counted as successful conversion.
             bdclose('all');
-            load_system(path);
-            [~, model] = fileparts(path);
+            handle = load_system(path);
+            model = get_param(handle, 'Name');
             root = sfroot;
             machine = root.find('-isa', 'Stateflow.Machine', 'Name', model);
-            charts = machine.find('-isa', 'Stateflow.Chart');
-            record.charts = arrayfun(@import_snapshot, charts, 'UniformOutput', false);
+            if ~isempty(machine)
+                charts = machine.find('-isa', 'Stateflow.Chart');
+                record.charts = arrayfun(@import_snapshot, charts, 'UniformOutput', false);
+            end
             record.status = 'extracted';
         catch failure
             record.status = 'extraction_error';
             record.error_id = failure.identifier;
             record.error = failure.message;
+            record.error_stack = failure.stack;
         end
         records{end+1} = record; %#ok<AGROW>
         write_json('artifacts/corpus-source.json', struct('matlab_release', version('-release'), 'models', {records}));

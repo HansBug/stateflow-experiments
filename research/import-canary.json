@@ -1,0 +1,94 @@
+{
+  "path": "import_canary/Controller",
+  "action_language": "MATLAB",
+  "activation": "DISCRETE",
+  "sample_time": "1",
+  "decomposition": "EXCLUSIVE_OR",
+  "states": [
+    {
+      "ssid": 3,
+      "name": "Idle",
+      "path": "import_canary/Controller",
+      "label": "Idle\nentry: y = 0;",
+      "parent_class": "Stateflow.Chart",
+      "parent_name": "Controller",
+      "decomposition": "EXCLUSIVE_OR",
+      "parent_ssid": []
+    },
+    {
+      "ssid": 4,
+      "name": "Active",
+      "path": "import_canary/Controller",
+      "label": "Active\nentry: y = 10;\nexit: y = -10;",
+      "parent_class": "Stateflow.Chart",
+      "parent_name": "Controller",
+      "decomposition": "EXCLUSIVE_OR",
+      "parent_ssid": []
+    },
+    {
+      "ssid": 5,
+      "name": "Running",
+      "path": "import_canary/Controller/Active",
+      "label": "Running\nentry: y = y + 1;\nduring: y = y + 1;\nexit: y = y + 100;",
+      "parent_class": "Stateflow.State",
+      "parent_name": "Active",
+      "decomposition": "EXCLUSIVE_OR",
+      "parent_ssid": 4
+    }
+  ],
+  "transitions": [
+    {
+      "ssid": 6,
+      "source_ssid": [],
+      "destination_ssid": 3,
+      "label": "?",
+      "priority": 1
+    },
+    {
+      "ssid": 7,
+      "source_ssid": [],
+      "destination_ssid": 5,
+      "label": "?",
+      "priority": 1
+    },
+    {
+      "ssid": 8,
+      "source_ssid": 3,
+      "destination_ssid": 4,
+      "label": "[u >= 1]",
+      "priority": 1
+    },
+    {
+      "ssid": 9,
+      "source_ssid": 4,
+      "destination_ssid": 3,
+      "label": "[u < 1]",
+      "priority": 1
+    }
+  ],
+  "data": [
+    {
+      "ssid": 1,
+      "name": "u",
+      "scope": "Input",
+      "type": "double",
+      "initial": "",
+      "size": "1",
+      "parent_class": "Stateflow.Chart"
+    },
+    {
+      "ssid": 2,
+      "name": "y",
+      "scope": "Output",
+      "type": "double",
+      "initial": "",
+      "size": "1",
+      "parent_class": "Stateflow.Chart"
+    }
+  ],
+  "junction_count": 0,
+  "event_count": 0,
+  "function_count": 0,
+  "truth_table_count": 0,
+  "chart_class": "Stateflow.Chart"
+}

@@ -21,6 +21,12 @@ jobs:
           ref: 70369bce666880805dcfdc325139ecdc8938a42d
           path: _external/cocosim
           persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: morganp/Stateflow_examples
+          ref: 2b2031bd519566f10483ce211e5edb89d4f107a7
+          path: _external/slnet_sample
+          persist-credentials: false
       - uses: matlab-actions/setup-matlab@v3
         with:
           release: R2022b
@@ -29,9 +35,14 @@ jobs:
       - uses: matlab-actions/run-command@v3
         with:
           command: addpath('matlab'); extract_corpus
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - run: python convert_corpus.py artifacts/corpus-source.json artifacts/converted
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: stateflow-import-source
-          path: artifacts/corpus-source.json
+          path: artifacts/
           if-no-files-found: error

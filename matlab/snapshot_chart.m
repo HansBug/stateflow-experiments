@@ -4,8 +4,10 @@ result = struct('path', chart.Path, 'action_language', chart.ActionLanguage, ...
     'activation', chart.ChartUpdate, 'sample_time', chart.SampleTime, ...
     'decomposition', chart.Decomposition, 'states', [], 'transitions', [], 'data', []);
 states = chart.find('-isa', 'Stateflow.State');
-[~, order] = sort([states.SSIdNumber]);
-states = states(order);
+if ~isempty(states)
+    [~, order] = sort([states.SSIdNumber]);
+    states = states(order);
+end
 for index = 1:numel(states)
     state = states(index);
     parent = state.getParent;
@@ -15,8 +17,10 @@ for index = 1:numel(states)
         'decomposition', state.Decomposition)]; %#ok<AGROW>
 end
 transitions = chart.find('-isa', 'Stateflow.Transition');
-[~, order] = sort([transitions.SSIdNumber]);
-transitions = transitions(order);
+if ~isempty(transitions)
+    [~, order] = sort([transitions.SSIdNumber]);
+    transitions = transitions(order);
+end
 for index = 1:numel(transitions)
     transition = transitions(index);
     source = [];
@@ -32,8 +36,10 @@ for index = 1:numel(transitions)
         'label', transition.LabelString, 'priority', transition.ExecutionOrder)]; %#ok<AGROW>
 end
 data = chart.find('-isa', 'Stateflow.Data');
-[~, order] = sort([data.SSIdNumber]);
-data = data(order);
+if ~isempty(data)
+    [~, order] = sort([data.SSIdNumber]);
+    data = data(order);
+end
 for index = 1:numel(data)
     item = data(index);
     result.data = [result.data, struct('ssid', item.SSIdNumber, ...
