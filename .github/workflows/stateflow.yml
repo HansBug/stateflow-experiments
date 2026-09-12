@@ -1,0 +1,49 @@
+name: Stateflow experiments
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: aitorarrietamarcos/StateflowRepairTool
+          ref: 6c5ba07962d972d3eade2448e7212faf74e11a50
+          path: _external/flowrepair
+          persist-credentials: false
+      - name: Install MATLAB and analysis products
+        id: matlab
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          release: R2022b
+          products: Simulink Stateflow Simulink_Test Simulink_Coverage Simulink_Design_Verifier
+          cache: true
+      - name: Native model lifecycle and behavioral checks
+        uses: matlab-actions/run-command@v3
+        with:
+          command: addpath('matlab'); run_core
+      - name: Coverage, harness, and generated tests
+        if: ${{ !cancelled() && steps.matlab.outcome == 'success' }}
+        uses: matlab-actions/run-command@v3
+        with:
+          command: addpath('matlab'); run_verification
+      - name: Public academic models
+        if: ${{ !cancelled() && steps.matlab.outcome == 'success' }}
+        uses: matlab-actions/run-command@v3
+        with:
+          command: addpath('matlab'); run_dataset
+      - name: Upload experiment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stateflow-R2022b-${{ github.run_attempt }}
+          path: artifacts/
+          if-no-files-found: warn

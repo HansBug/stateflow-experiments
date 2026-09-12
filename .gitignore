@@ -1,0 +1,6 @@
+artifacts/
+_external/
+slprj/
+*.slxc
+*.asv
+*_rtw/
