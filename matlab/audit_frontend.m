@@ -8,7 +8,8 @@ labels = {sprintf('Idle\nentry: %% native MATLAB comment\ny = 0;'), ...
     sprintf('Idle\nentry: // native C comment\ny = 0;')};
 for i = 1:numel(languages)
     model = create_controller(['comment_probe_' num2str(i)]);
-    chart = sfroot.find('-isa', 'Stateflow.Chart', 'Path', [model '/Controller']);
+    root = sfroot;
+    chart = root.find('-isa', 'Stateflow.Chart', 'Path', [model '/Controller']);
     chart.ActionLanguage = languages{i};
     idle = chart.find('-isa', 'Stateflow.State', 'Name', 'Idle');
     idle.LabelString = labels{i};
@@ -36,7 +37,8 @@ try
     % MException: native model compilation or compiled-property access can fail;
     % preserve its identifier and message rather than label it parser unsupported.
     feval(model, [], [], [], 'compile');
-    machine = sfroot.find('-isa', 'Stateflow.Machine', 'Name', model);
+    root = sfroot;
+    machine = root.find('-isa', 'Stateflow.Machine', 'Name', model);
     charts = machine.find('-isa', 'Stateflow.Chart');
     for i = 1:numel(charts)
         chart = charts(i);
