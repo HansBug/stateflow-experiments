@@ -25,6 +25,8 @@
 
 MARS 仓库公开了 Stateflow→HCSP、Stateflow→Isabelle 和形式操作语义相关实现。这里复用的是这些工作已有的语言解析部分；没有声称继承它们的语义证明。实际接入时发现 upstream transformer 对无 `entry:` 等角色的单条赋值会丢弃，而对 Sequence 又可能当成 entry。我们的包装明确拒绝这种输入，避免静默丢动作。
 
+MARS 的 `SL_Diagram(location)` 图读取入口对文件调用 `minidom.parse`，其转换测试使用导出的 `.xml`。它不能被当作已经验证过的通用 SLX/MDL 容器读取器。该语料还有 238 个 XML、104 个 Isabelle theory 和 129 个文本产物；本次原生批量器只枚举 456 SLX + 4 MDL，避免把导出物重复算成源模型。
+
 仅增加两类声明式 grammar alternatives：`~=`/`<>` 不等式，以及旧标签 `Name/` 后接显式动作角色。表达式与语句映射检查 MARS 的 AST 类，不进行文本替换。原生默认转移的空标签可能返回精确的 `?`，只对此特定原生哨兵值做归一化；其他标签全部交给语法分析器。`check_import.py` 固定这些边界。
 
 当前拒绝 condition action、junction/history、事件、并行状态、任意函数和 composite during。前两项尤其需要源语言的路径搜索与副作用规则；找到现成代码只减少实现成本，不会让这些语义自动等价于 FCSTM effect。

@@ -2,14 +2,23 @@
 import copy
 import json
 from pathlib import Path
-from convert_corpus import lower, Unsupported
+import sys
+from convert_corpus import lower, Unsupported, items
 from source_ast import parse, sf, SourceParserError
 from pyfcstm.dsl import parse_with_grammar_entry
 from pyfcstm.model import parse_dsl_node_to_state_machine
 from pyfcstm.diagnostics import inspect_model
 from pyfcstm.simulate import SimulationRuntime
 
-chart = json.loads((Path(__file__).parent / 'research/import-canary.json').read_text())
+if len(sys.argv) > 1:
+    source = json.loads(Path(sys.argv[1]).read_text())
+    canary = next(m for m in source['models'] if m['dataset'] == 'synthetic')
+    assert canary['status'] == 'extracted', canary
+    charts = items(canary['charts'])
+    assert len(charts) == 1
+    chart = charts[0]
+else:
+    chart = json.loads((Path(__file__).parent / 'research/import-canary.json').read_text())
 dsl, mapping = lower(chart)
 ast = parse_with_grammar_entry(dsl, 'state_machine_dsl')
 model = parse_dsl_node_to_state_machine(ast)
