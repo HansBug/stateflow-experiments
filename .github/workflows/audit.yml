@@ -1,0 +1,31 @@
+name: Stateflow frontend audit
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: aitorarrietamarcos/StateflowRepairTool
+          ref: 6c5ba07962d972d3eade2448e7212faf74e11a50
+          path: _external/flowrepair
+          persist-credentials: false
+      - uses: matlab-actions/setup-matlab@v3
+        with:
+          release: R2025b
+          products: Simulink Stateflow
+          cache: true
+      - uses: matlab-actions/run-command@v3
+        with:
+          command: addpath('matlab'); audit_frontend
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: stateflow-frontend-audit
+          path: artifacts/
+          if-no-files-found: error
