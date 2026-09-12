@@ -1,0 +1,42 @@
+{
+  "revision": "ebb91b7dfbc52bfe5074766281fd3fb8446976c9",
+  "jar_url": "https://raw.githubusercontent.com/NASA-SW-VnV/CoCoSim/ebb91b7dfbc52bfe5074766281fd3fb8446976c9/src/frontEnd/IR/Matlab_IR/Matlab-Parser.jar",
+  "jar_sha256": "ae9aba6466807b8fd0c8809c82c3bfefd11da7a5c339fe6d8160bf751ec1cce5",
+  "results": [
+    {
+      "case": "assignment",
+      "source": "x = 1;",
+      "exit_code": 0,
+      "stdout": "{\n\"type\":\"script\",\n\"statements\":[{\n\"type\":\"assignment\",\n\"operator\":\"=\",\n\"leftExp\":{\n\"type\":\"ID\",\n\"name\":\"x\",\n\"text\":\"x\"\n},\n\"rightExp\":{\n\"type\":\"constant\",\n\"dataType\":\"Integer\",\n\"value\":\"1\",\n\"text\":\"1\"\n},\n\"text\":\"x = 1\"\n}\n]\n}\n",
+      "stderr": ""
+    },
+    {
+      "case": "guard",
+      "source": "y = x ~= 0;",
+      "exit_code": 0,
+      "stdout": "{\n\"type\":\"script\",\n\"statements\":[{\n\"type\":\"assignment\",\n\"operator\":\"=\",\n\"leftExp\":{\n\"type\":\"ID\",\n\"name\":\"y\",\n\"text\":\"y\"\n},\n\"rightExp\":{\n\"type\":\"relopEQ_NE\",\n\"operator\":\"~=\",\n\"leftExp\":{\n\"type\":\"ID\",\n\"name\":\"x\",\n\"text\":\"x\"\n},\n\"rightExp\":{\n\"type\":\"constant\",\n\"dataType\":\"Integer\",\n\"value\":\"0\",\n\"text\":\"0\"\n},\n\"text\":\"x~=0\"\n},\n\"text\":\"y = x~=0\"\n}\n]\n}\n",
+      "stderr": ""
+    },
+    {
+      "case": "invalid",
+      "source": "x = ;",
+      "exit_code": 0,
+      "stdout": "{\n\"type\":\"script\",\n\"statements\":[{\n\"type\":\"ID\",\n\"name\":\"x\",\n\"text\":\"x\"\n}\n]\n}\n",
+      "stderr": "line 1:2 extraneous input '=' expecting {<EOF>, ',', ';', NL}\n"
+    },
+    {
+      "case": "state-label",
+      "source": "Idle\nentry: x = 1;",
+      "exit_code": 0,
+      "stdout": "{\n\"type\":\"script\",\n\"statements\":[{\n\"type\":\"ID\",\n\"name\":\"Idle\",\n\"text\":\"Idle\"\n},\n{\n\"type\":\"colonExpression\",\n\"operator\":\":\",\n\"leftExp\":{\n\"type\":\"ID\",\n\"name\":\"entry\",\n\"text\":\"entry\"\n},\n\"rightExp\":{\n\"type\":\"ID\",\n\"name\":\"x\",\n\"text\":\"x\"\n},\n\"text\":\"entry:x\"\n}\n]\n}\n",
+      "stderr": "line 2:9 mismatched input '=' expecting {<EOF>, ',', ';', NL}\n"
+    },
+    {
+      "case": "transition-label",
+      "source": "[x > 0] / x = 1;",
+      "exit_code": 0,
+      "stdout": "{\n\"type\":\"script\",\n\"statements\":[{\n\"type\":\"mrdivide\",\n\"operator\":\"/\",\n\"leftExp\":{\n\"type\":\"matrix\",\n\"rows\":[[{\n\"type\":\"relopGL\",\n\"operator\":\">\",\n\"leftExp\":{\n\"type\":\"ID\",\n\"name\":\"x\",\n\"text\":\"x\"\n},\n\"rightExp\":{\n\"type\":\"constant\",\n\"dataType\":\"Integer\",\n\"value\":\"0\",\n\"text\":\"0\"\n},\n\"text\":\"x>0\"\n}]],\n\"text\":\"[x>0]\"\n},\n\"rightExp\":{\n\"type\":\"ID\",\n\"name\":\"x\",\n\"text\":\"x\"\n},\n\"text\":\"[x>0]/x\"\n}\n]\n}\n",
+      "stderr": "line 1:12 mismatched input '=' expecting {<EOF>, ',', ';', NL}\n"
+    }
+  ]
+}

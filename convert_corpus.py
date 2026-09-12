@@ -151,6 +151,7 @@ def run(source, output):
     rows = []
     for model in source['models']:
         identity = {'dataset': model['dataset'], 'source': model['source']}
+        identity.update({key: model.get(key) for key in ('sha256', 'snapshot_sha256', 'source_revision')})
         if model['status'] != 'extracted':
             rows.append({**identity, 'status': 'extraction_error', 'detail': model['error'], 'code': model['error_id']})
             continue
@@ -185,7 +186,10 @@ def run(source, output):
                 # GrammarParseError: generated DSL grammar failure; ModelValidationError: invalid target semantics.
                 row.update(status='target_error', code=type(error).__name__, detail=str(error))
             rows.append(row)
-    summary = {'source_model_files': len(source['models']), 'results': dict(Counter(r['status'] for r in rows)),
+    summary = {'source_model_files': len(source['models']),
+               'extracted_charts': sum(len(items(m['charts'])) for m in source['models'] if m['status'] == 'extracted'),
+               'files_with_converted_chart': len({(r['dataset'], r['source']) for r in rows if r['status'] == 'converted'}),
+               'results': dict(Counter(r['status'] for r in rows)),
                'unsupported_first_reason': dict(Counter(r['code'] for r in rows if r['status'] == 'unsupported')),
                'by_dataset': {name: dict(Counter(r['status'] for r in rows if r['dataset'] == name)) for name in sorted({r['dataset'] for r in rows})}}
     (output / 'results.json').write_text(json.dumps({'summary': summary, 'records': rows}, indent=2) + '\n')

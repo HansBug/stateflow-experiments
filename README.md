@@ -6,16 +6,19 @@ or repository license secret was supplied to these experiments.
 
 [公开模型与文件格式调查](docs/public-models.zh.md) ·
 [单向导入边界](docs/import-architecture.zh.md) ·
+[现成工具比较](docs/reused-frontends.zh.md) ·
 [Separate SysML v2 experiments](https://github.com/HansBug/sysmlv2-experiment) ·
 [Public workflow runs](https://github.com/HansBug/stateflow-experiments/actions)
 
-This is an experiment repository. It does not implement a Stateflow-to-FCSTM
-importer or establish semantic equivalence for the Stateflow language.
+This repository implements a restricted one-way Stateflow-to-FCSTM importer.
+MathWorks APIs extract the graph, the pinned MARS grammar builds source ASTs,
+and pyfcstm 0.6.0 builds the target AST/model and runs semantic inspection.
+Unsupported constructs are recorded, without a language-wide equivalence claim.
 
 ## Observed capabilities
 
 Environment: MATLAB **R2022b**, Ubuntu 22.04, official MATLAB Actions v3.
-The current experiment revision is `add4a279d6b641d249ee3e89232bf9f4eada425d`.
+The native lifecycle evidence revision is `add4a279d6b641d249ee3e89232bf9f4eada425d`.
 Results below describe concrete probes, not blanket product compatibility.
 [Validated workflow run](https://github.com/HansBug/stateflow-experiments/actions/runs/34692475531) ·
 [Checked-in result summary](research/stateflow-observed.json).
@@ -90,6 +93,26 @@ execution is the tested integration approach. The public batch-token request
 page stated that new requests were not being accepted when checked on
 2026-09-12. Optional licensed workflows can be revisited when access is available.
 
+## Run the import corpus
+
+```bash
+gh workflow run import.yml --repo HansBug/stateflow-experiments
+gh run download RUN_ID --repo HansBug/stateflow-experiments --dir evidence
+python -m pip install -r requirements.txt
+git clone https://github.com/bzhan/mars.git _external/mars
+git -C _external/mars checkout 5659710bc0fae06d05518bd7d80f11a3138cf679
+python check_import.py
+python convert_corpus.py evidence/stateflow-import-source/corpus-source.json artifacts/converted
+```
+
+The import workflow fetches pinned FlowRepair, CoCoSim, SLNET-sample and MARS
+models, extracts every candidate with Stateflow, attaches source hashes, and
+uploads `corpus-source.json`, `converted/results.json`, accepted `.fcstm`
+models, source mappings and full semantic reports. Corpus rejections are data;
+the mandatory canary and parser checks fail CI if the implemented path breaks.
+[Measured corpus results](docs/import-results.zh.md) distinguish files, charts,
+synthetic canaries, unsupported features and actual parser/target failures.
+
 ## Import and dataset boundaries
 
 Current scope is **one-way Stateflow → FCSTM**, with source mappings for later
@@ -122,7 +145,7 @@ The independent [SysML v2 experiment repository](https://github.com/HansBug/sysm
 the official Pilot workspace to validate models, link references across
 resources, inspect typed state/transition elements and source spans, and reject
 an unresolved type. It does not provide a SysML state-machine execution oracle
-or a complete FCSTM importer.
+or unrestricted SysML-to-FCSTM semantic equivalence.
 
 ## Sources
 

@@ -3,6 +3,7 @@ import copy
 import json
 from pathlib import Path
 from convert_corpus import lower, Unsupported
+from source_ast import parse, sf, SourceParserError
 from pyfcstm.dsl import parse_with_grammar_entry
 from pyfcstm.model import parse_dsl_node_to_state_machine
 from pyfcstm.diagnostics import inspect_model
@@ -19,6 +20,18 @@ assert len([m for m in mapping if m['kind'] == 'transition']) == 4
 runtime = SimulationRuntime(model)
 runtime.cycle()
 assert '.'.join(runtime.current_state.path) == 'Controller.S3'
+for spelling in ('~=', '<>'):
+    guard = parse('[u ' + spelling + ' 0]', 'transition').cond
+    assert isinstance(guard, sf.RelExpr) and guard.op == '!='
+state = parse('Idle/\nen: y = 1;', 'state_op')
+assert isinstance(state.en_op.op, sf.Assign)
+try:
+    parse('Idle\ny = 1;', 'state_op')
+except SourceParserError:
+    # SourceParserError: the upstream transformer would drop this unlabelled action.
+    pass
+else:
+    raise AssertionError('Unlabelled action was silently lost')
 for field, value, code in [('junction_count', 1, 'junction'), ('decomposition', 'PARALLEL_AND', 'parallel')]:
     unsupported = copy.deepcopy(chart)
     unsupported[field] = value
