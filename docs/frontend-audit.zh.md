@@ -2,6 +2,16 @@
 
 **本轮没有确认 MathWorks 官方前端缺陷。已确认的障碍分别在我们读取的上下文、复用的 MARS 标签语法、以及尚未实现的转换规则。** 本报告不提高历史转换成功数，也不把原生加载成功当作整个模型已经可执行或可转换。
 
+## 归因判定顺序
+
+Stateflow 失败先按“官方读取/编译 → 第三方标签前端 → 我们的目标映射”分层：
+
+1. MATLAB/Stateflow 官方 API 能打开并抽取 Chart，且 R2025b 编译通过，说明容器和官方读取入口可用；声明尺寸为 `-1` 这类信息仍要用 compiled context 补全，不能直接当作官方错误。
+2. MARS、CoCoSim 等第三方 parser 的拒绝或部分 AST 只说明该工具的 grammar/错误处理能力。MATLAB 原生编译接受、MARS 拒绝注释标签的最小对照已经复现，因此应登记为第三方前端覆盖缺口。
+3. 官方对象已读出而我们因 junction、event、function、并行、调度或动作时机拒绝时，这是转换 profile 边界。任何 source-parser error 必须保留原标签、Chart/文件哈希和 parser 诊断；退出码为 0 的部分 AST 也不能当作成功解析。
+
+当前没有“官方 API/编译拒绝而独立成熟前端确认接受”的最小反例，所以没有把 MathWorks 前端列为已确认 bug。要升级为官方 candidate，必须固定 MATLAB release、模型哈希、最小 `.slx/.mdl`、官方诊断和独立对照结果。
+
 [机器可读证据](../research/frontend-observed.json) 包含语料快照 SHA256、上游版本、逐条拒绝标签的定位与哈希、解析结果统计、原生编译事实。完整标签诊断可从固定语料快照重跑。原生编译来自 [Actions 34705633100](https://github.com/HansBug/stateflow-experiments/actions/runs/34705633100)，MATLAB R2025b、Ubuntu 24.04，实验脚本提交 `1306829`；标签审计在 Python 3.10、Lark 1.2.2、固定 MARS commit 上执行。
 
 ## 官方读取与我们的元数据缺口
